@@ -1,7 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import PageLayout from "../components/pagelayout";
+
 
 export default function SeasonalPopularityPage() {
   const [filters, setFilters] = useState({
@@ -10,15 +10,81 @@ export default function SeasonalPopularityPage() {
     region: "",
     category: "",
   });
+  const [plotUrl, setPlotUrl] = useState<string | null>(null);
+  const [tableData, setTableData] = useState<any[]>([]);
+  // 🧠 Extract dynamic month/season columns
+  const dynamicKeys = tableData.length > 0 
+    ? Object.keys(tableData[0]).filter(key => key.includes("Count"))
+    : [];
 
+
+  // Map month abbreviations to seasons
+  const monthToSeason: Record<string, string> = {
+    "Jan Count": "Winter",
+    "Feb Count": "Winter",
+    "Mar Count": "Spring",
+    "Apr Count": "Spring",
+    "May Count": "Spring",
+    "Jun Count": "Summer",
+    "Jul Count": "Summer",
+    "Aug Count": "Summer",
+    "Sep Count": "Fall",
+    "Oct Count": "Fall",
+    "Nov Count": "Fall",
+    "Dec Count": "Winter",
+  };
+
+  // Helper to aggregate monthly counts into seasonal sums
+  const aggregateToSeasons = (row: any) => {
+    const seasonSums: Record<string, number> = { Fall: 0, Winter: 0, Spring: 0, Summer: 0 };
+    Object.entries(row).forEach(([key, value]) => {
+      if (key.includes("Count") && monthToSeason[key]) {
+        seasonSums[monthToSeason[key]] += Number(value) || 0;
+      }
+    });
+    return seasonSums;
+  };
+
+  const staticHeaders = ["Business", "Category", "City"];
+  let dynamicHeaders: string[] = [];
+  let rows = tableData;
+
+  if (filters.season === "") {
+    // All seasons selected: show 4 season columns aggregated
+    dynamicHeaders = ["Fall", "Winter", "Spring", "Summer"];
+    // Replace each row with seasonal aggregated counts
+    rows = tableData.map(row => ({
+      ...row,
+      ...aggregateToSeasons(row),
+    }));
+  } else {
+    // Specific season selected: show monthly columns that belong to that season only
+    dynamicHeaders = dynamicKeys.filter(month => monthToSeason[month] === filters.season);
+  }
+
+  const fullHeaders = [...staticHeaders, ...dynamicHeaders, "Total Checkins"];
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleApplyFilters = () => {
-    console.log("Applied Filters:", filters);
-    // Fetch data using these filters from your API
+  const handleApplyFilters = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      });
+
+      if (!response.ok) throw new Error("Network response was not ok");
+
+      const data = await response.json();
+      setPlotUrl(`data:image/png;base64,${data.plot}`);
+      setTableData(data.table_data);
+    } catch (error) {
+      console.error("Error sending filters:", error);
+    }
   };
 
   return (
@@ -32,17 +98,6 @@ export default function SeasonalPopularityPage() {
       <div className="bg-white p-6 rounded shadow mb-6">
         <h2 className="text-lg font-semibold mb-4 text-black">Filter Options</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-black">Year</label>
-            <input
-              type="number"
-              name="year"
-              value={filters.year}
-              onChange={handleChange}
-              placeholder="e.g. 2023"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
-            />
-          </div>
           <div>
             <label className="block text-sm font-medium text-black">Season</label>
             <select
@@ -60,18 +115,14 @@ export default function SeasonalPopularityPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-black">City or Region</label>
-            <select
+            <input
+              type="text"
               name="region"
               value={filters.region}
               onChange={handleChange}
+              placeholder="e.g. Las Vegas"
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
-            >
-              <option value="">All</option>
-              <option>Las Vegas</option>
-              <option>Toronto</option>
-              <option>Phoenix</option>
-              <option>Charlotte</option>
-            </select>
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-black">Business Category</label>
@@ -96,38 +147,54 @@ export default function SeasonalPopularityPage() {
         </div>
       </div>
 
-      {/* Graph & Table Section */}
-      <div className="bg-white p-6 rounded shadow">
-        <h2 className="text-lg font-semibold mb-4">Seasonal Trend Graph</h2>
-        <div className="bg-gray-100 h-64 flex items-center justify-center border border-dashed rounded">
-          <span className="text-gray-500">[ Seasonal Graph will appear here ]</span>
-        </div>
 
-        <h2 className="text-lg font-semibold mt-8 mb-4">Seasonal Popularity Data Table</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border rounded">
-            <thead>
+      {/* Graph Section */}
+      <div className="bg-gray-100 py-4 px-6 border rounded flex items-center justify-center">
+        {plotUrl ? (
+          <img src={plotUrl} alt="Seasonal Trend Graph" className="w-full h-auto" />
+        ) : (
+          <span className="text-gray-500">[ Graph will appear here after filter is applied ]</span>
+        )}
+      </div>
+
+      {/* Table Section */}
+      <h2 className="text-lg font-semibold mt-8 mb-4">Seasonal Popularity Data Table</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border rounded">
+          <thead>
+            <tr>
+              {fullHeaders.map((header, idx) => (
+                <th key={idx} className="px-4 py-2 border-b text-left">{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length > 0 ? (
+              rows.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td className="px-4 py-2 border-b">{row.name}</td>
+                  <td className="px-4 py-2 border-b">{row.categories}</td>
+                  <td className="px-4 py-2 border-b">{row.city}</td>
+
+                  {/* Dynamic seasonal or monthly columns */}
+                  {dynamicHeaders.map((header, i) => (
+                    <td key={i} className="px-4 py-2 border-b">
+                      {row[header] ?? 0}
+                    </td>
+                  ))}
+
+                  <td className="px-4 py-2 border-b">{row.score}</td>
+                </tr>
+              ))
+            ) : (
               <tr>
-                <th className="px-4 py-2 border-b text-left">Year</th>
-                <th className="px-4 py-2 border-b text-left">Season</th>
-                <th className="px-4 py-2 border-b text-left">Business</th>
-                <th className="px-4 py-2 border-b text-left">Category</th>
-                <th className="px-4 py-2 border-b text-left">City</th>
-                <th className="px-4 py-2 border-b text-left">Popularity Score</th>
+                <td colSpan={fullHeaders.length} className="px-4 py-2 border-b text-center text-gray-500">
+                  No data yet.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-4 py-2 border-b">2023</td>
-                <td className="px-4 py-2 border-b">Winter</td>
-                <td className="px-4 py-2 border-b">Maple Cafe</td>
-                <td className="px-4 py-2 border-b">Cafes</td>
-                <td className="px-4 py-2 border-b">Toronto</td>
-                <td className="px-4 py-2 border-b">78</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            )}
+          </tbody>
+        </table>
       </div>
     </PageLayout>
   );
