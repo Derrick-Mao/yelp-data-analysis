@@ -1,3 +1,11 @@
+This project performs 5 Analysis on the [Yelp Dataset](https://www.kaggle.com/datasets/yelp-dataset/yelp-dataset?select=yelp_academic_dataset_review.json) from Kaggle
+
+- Anomalies between the star rating and the review text
+- Seasonal popularity of businesses across different regions
+- Popularity trends across different cities and categories
+- Yelp review behavior comparison between elite and non-elite users
+- Frequently used phrases in reviews for every category
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

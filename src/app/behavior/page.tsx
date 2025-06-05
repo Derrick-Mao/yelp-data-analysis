@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Header from "../../components/header";
+import { useState } from "react";
 import PageLayout from "../../components/pagelayout";
 
 const UserBehavior = () => {
@@ -77,7 +76,7 @@ const UserBehavior = () => {
     >
       {/* Filter Section */}
       <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-black">Filter Options</h2>
+        <div className="text-lg font-semibold mb-4 text-black">Filter Options</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-black">Questions</label>
@@ -104,45 +103,44 @@ const UserBehavior = () => {
           <span className="text-gray-500">[ Graph comparing elite vs non-elite users ]</span>
         </div> */}
 
-        <h2 className="text-lg font-semibold mt-8 mb-4 text-black">User Behavior Summary</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border rounded">
-            <thead>
-              <tr>
-                {columns.map((col) => (
-                  <th key={col.key} className="px-4 py-2 border-b text-left text-black capitalize">
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="text-black">
-              {Array.isArray(data) && data.length > 0 ? (
-                data.map((row, i) => (
-                  <tr key={i}>
-                    {columns.map((col) => (
-                      <td key={col.key} className="px-4 py-2 border-b">
-                        {col.key === "is_elite"
-                          ? row[col.key] === true
-                          ? "Yes"
-                          : "No"
-                        : row[col.key]}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={columns.length} className="px-4 py-2 text-center text-gray-500">
-                    No data available.
-                  </td>
+      <div className="text-lg font-semibold mt-8 mb-4 text-black">User Behavior Summary</div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border rounded">
+          <thead>
+            <tr>
+              {columns.map((col) => (
+                <th key={col.key} className="px-4 py-2 border-b text-left text-black capitalize">
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="text-black">
+            {Array.isArray(data) && data.length > 0 ? (
+              data.map((row, i) => (
+                <tr key={i}>
+                  {columns.map((col) => (
+                    <td key={col.key} className="px-4 py-2 border-b">
+                      {col.key === "is_elite"
+                        ? row[col.key] === true
+                        ? "Yes"
+                        : "No"
+                      : row[col.key]}
+                    </td>
+                  ))}
                 </tr>
-              )}
-            </tbody>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="px-4 py-2 text-center text-gray-500">
+                  No data available.
+                </td>
+              </tr>
+            )}
+          </tbody>
 
-          </table>
-        </div>
-      {/* </div> */}
+        </table>
+      </div>
     </PageLayout>
   );
 };

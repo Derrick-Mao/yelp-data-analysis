@@ -2,7 +2,6 @@
 import { useState } from "react";
 import PageLayout from "../../components/pagelayout";
 
-
 export default function SeasonalPopularityPage() {
   const [filters, setFilters] = useState({
     year: "",
@@ -96,7 +95,7 @@ export default function SeasonalPopularityPage() {
     >
       {/* Filter Section */}
       <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-black">Filter Options</h2>
+        <div className="text-lg font-semibold mb-4 text-black">Filter Options</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-black">Season</label>
@@ -158,7 +157,7 @@ export default function SeasonalPopularityPage() {
       </div>
 
       {/* Table Section */}
-      <h2 className="text-lg font-semibold mt-8 mb-4 text-black">Seasonal Popularity Data Table</h2>
+      <div className="text-lg font-semibold mt-8 mb-4 text-black">Seasonal Popularity Data Table</div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border rounded">
           <thead>
