@@ -5,22 +5,43 @@ import PageLayout from "../components/pagelayout";
 
 export default function AreaPopularityPage() {
   const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    region: "",
-    category: "",
-    minPopularity: "",
-    maxPopularity: "",
+    area_type: "",
+    average_checkins: "",
   });
+
+  type Areapop = {
+    category: string;
+    area_type: string;
+    business_count: number;
+    average_rating: number;
+    average_checkins: number;
+  }
+
+  const [areapopularity, setArea] = useState<Areapop[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleApplyFilters = () => {
-    console.log("Applied Filters:", filters);
-    // Fetch data using these filters from your API
+   const handleApplyFilters = async () => {
+    const params = new URLSearchParams();
+
+    if(filters.average_checkins) {
+      params.append("checkin_lte", filters.average_checkins);
+    }
+    if(filters.area_type) {
+      params.append("area_type", filters.area_type);
+    }
+
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/api/areapopularity?${params.toString()}`);
+      const data = await response.json();
+      // console.log("Fetched anomalies:", data);
+      setArea(data);
+    } catch (error) {
+      console.error("Failed to fetch area:", error);
+    }
   };
 
   return (
@@ -35,70 +56,27 @@ export default function AreaPopularityPage() {
         <h2 className="text-lg font-semibold mb-4 text-black">Filter Options</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-black">Start Date</label>
-            <input
-              type="date"
-              name="startDate"
-              value={filters.startDate}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-black">End Date</label>
-            <input
-              type="date"
-              name="endDate"
-              value={filters.endDate}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-black">City or Region</label>
+            <label className="block text-sm font-medium text-black">Area Type</label>
             <select
-              name="region"
-              value={filters.region}
+              name="area_type"
+              value={filters.area_type}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
             >
               <option value="">All</option>
-              <option>Las Vegas</option>
-              <option>Toronto</option>
-              <option>Phoenix</option>
-              <option>Charlotte</option>
+              <option>rural</option>
+              <option>urban</option>
+              <option>suburban</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-black">Business Category</label>
-            <input
-              type="text"
-              name="category"
-              value={filters.category}
-              onChange={handleChange}
-              placeholder="e.g. Restaurants"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-black">Min Popularity Score</label>
+            <label className="block text-sm font-medium text-black">Average Check-Ins</label>
             <input
               type="number"
-              name="minPopularity"
-              value={filters.minPopularity}
+              name="average_checkins"
+              value={filters.average_checkins}
               onChange={handleChange}
-              placeholder="e.g. 10"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-black">Max Popularity Score</label>
-            <input
-              type="number"
-              name="maxPopularity"
-              value={filters.maxPopularity}
-              onChange={handleChange}
-              placeholder="e.g. 100"
+              placeholder="e.g. 50"
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-black"
             />
           </div>
@@ -115,36 +93,38 @@ export default function AreaPopularityPage() {
       </div>
 
       {/* Graph & Table Section */}
-      <div className="bg-white p-6 rounded shadow">
-        <h2 className="text-lg font-semibold mb-4">Popularity Trend Graph</h2>
+      {/* <div className="bg-white p-6 rounded shadow">
+        <h2 className="text-lg font-semibold mb-4 text-black">Popularity Trend Graph</h2>
         <div className="bg-gray-100 h-64 flex items-center justify-center border border-dashed rounded">
           <span className="text-gray-500">[ Graph will appear here ]</span>
-        </div>
+        </div> */}
 
-        <h2 className="text-lg font-semibold mt-8 mb-4">Popularity Data Table</h2>
+        <h2 className="text-lg font-semibold mt-8 mb-4 text-black">Popularity Data Table</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border rounded">
             <thead>
               <tr>
-                <th className="px-4 py-2 border-b text-left">Date</th>
-                <th className="px-4 py-2 border-b text-left">Business</th>
-                <th className="px-4 py-2 border-b text-left">Category</th>
-                <th className="px-4 py-2 border-b text-left">City</th>
-                <th className="px-4 py-2 border-b text-left">Popularity Score</th>
+                <th className="px-4 py-2 border-b text-left text-black">Category</th>
+                <th className="px-4 py-2 border-b text-left text-black">Area Type</th>
+                <th className="px-4 py-2 border-b text-left text-black">Business Count</th>
+                <th className="px-4 py-2 border-b text-left text-black">Average Rating</th>
+                <th className="px-4 py-2 border-b text-left text-black">Average Check-Ins</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td className="px-4 py-2 border-b">2024-03-15</td>
-                <td className="px-4 py-2 border-b">Joe's Pizza</td>
-                <td className="px-4 py-2 border-b">Restaurants</td>
-                <td className="px-4 py-2 border-b">Las Vegas</td>
-                <td className="px-4 py-2 border-b">85</td>
+            <tbody className="text-black">
+              {areapopularity.map((area, index) => (
+              <tr key = {index}>
+                <td className="px-4 py-2 border-b">{area.category}</td>
+                <td className="px-4 py-2 border-b">{area.area_type || "N/A"}</td>
+                <td className="px-4 py-2 border-b">{area.business_count}</td>
+                <td className="px-4 py-2 border-b">{area.average_rating}</td>
+                <td className="px-4 py-2 border-b">{area.average_checkins}</td>
               </tr>
+              ))}
             </tbody>
           </table>
         </div>
-      </div>
+      {/* </div> */}
     </PageLayout>
   );
 }
