@@ -117,38 +117,37 @@ export default function AnomalyPage() {
           <span className="text-gray-500">[ Graph will appear here ]</span>
         </div> */}
 
-        <h2 className="text-lg font-semibold mt-8 mb-4 text-black">Anomaly Data Table</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border rounded">
-            <thead>
+      <div className="text-lg font-semibold mt-8 mb-4 text-black">Anomaly Data Table</div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border rounded">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 border-b text-left text-black">Anomaly</th>
+              <th className="px-4 py-2 border-b text-left text-black">Predicted Sentiment</th>
+              <th className="px-4 py-2 border-b text-left text-black">Stars</th>
+              <th className="px-4 py-2 border-b text-left text-black">Text</th>
+            </tr>
+          </thead>
+          <tbody className= "text-black">
+            {anomalies.length === 0 ? (
               <tr>
-                <th className="px-4 py-2 border-b text-left text-black">Anomaly</th>
-                <th className="px-4 py-2 border-b text-left text-black">Predicted Sentiment</th>
-                <th className="px-4 py-2 border-b text-left text-black">Stars</th>
-                <th className="px-4 py-2 border-b text-left text-black">Text</th>
+                <td colSpan={6} className="text-center py-4 text-gray-500">
+                  No data found. Apply filters to see results.
+                </td>
               </tr>
-            </thead>
-            <tbody className= "text-black">
-              {anomalies.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="text-center py-4 text-gray-500">
-                    No data found. Apply filters to see results.
-                  </td>
+            ) : (
+              anomalies.map((item, index) => (
+                <tr key={index}>
+                  <td className="px-4 py-2 border-b">{item.anomaly}</td>
+                  <td className="px-4 py-2 border-b">{item.predicted_sentiment || "N/A"}</td>
+                  <td className="px-4 py-2 border-b">{item.stars}</td>
+                  <td className="px-4 py-2 border-b">{item.text}</td>
                 </tr>
-              ) : (
-                anomalies.map((item, index) => (
-                  <tr key={index}>
-                    <td className="px-4 py-2 border-b">{item.anomaly}</td>
-                    <td className="px-4 py-2 border-b">{item.predicted_sentiment || "N/A"}</td>
-                    <td className="px-4 py-2 border-b">{item.stars}</td>
-                    <td className="px-4 py-2 border-b">{item.text}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      {/* </div> */}
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </PageLayout>
   );
 }

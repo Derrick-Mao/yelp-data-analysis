@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Header from "../../components/header";
 import PageLayout from "../../components/pagelayout";
 
 const TopPhrases = () => {
@@ -55,7 +54,7 @@ const TopPhrases = () => {
     >
       {/* Filter Panel */}
       <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-black">Filter Options</h2>
+        <div className="text-lg font-semibold mb-4 text-black">Filter Options</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-black">Count</label>
@@ -106,7 +105,7 @@ const TopPhrases = () => {
 
       {/* Table of Top Phrases */}
       <div className="bg-white p-6 rounded shadow">
-        <h2 className="text-lg font-semibold mb-4 text-black">Top Phrases</h2>
+        <div className="text-lg font-semibold mb-4 text-black">Top Phrases</div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border rounded">
             <thead>

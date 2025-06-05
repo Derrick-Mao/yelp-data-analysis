@@ -53,7 +53,7 @@ export default function AreaPopularityPage() {
     >
       {/* Filter Section */}
       <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-black">Filter Options</h2>
+        <div className="text-lg font-semibold mb-4 text-black">Filter Options</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-black">Area Type</label>
@@ -99,7 +99,7 @@ export default function AreaPopularityPage() {
           <span className="text-gray-500">[ Graph will appear here ]</span>
         </div> */}
 
-        <h2 className="text-lg font-semibold mt-8 mb-4 text-black">Popularity Data Table</h2>
+        <div className="text-lg font-semibold mt-8 mb-4 text-black">Popularity Data Table</div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border rounded">
             <thead>
