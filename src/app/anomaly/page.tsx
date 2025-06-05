@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import PageLayout from "../components/pagelayout";
+import PageLayout from "../../components/pagelayout";
 
 export default function AnomalyPage() {
   const [filters, setFilters] = useState({

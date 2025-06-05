@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Header from "../components/header";
-import PageLayout from "../components/pagelayout";
+import Header from "../../components/header";
+import PageLayout from "../../components/pagelayout";
 
 const TopPhrases = () => {
   const [filters, setFilters] = useState({

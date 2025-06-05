@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Header from "../components/header";
-import PageLayout from "../components/pagelayout";
+import Header from "../../components/header";
+import PageLayout from "../../components/pagelayout";
 
 const UserBehavior = () => {
   type QuestionKey = "all" | "vote_counter" | "avg_review_length" | "avg_stars" | "badges";
